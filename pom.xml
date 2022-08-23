@@ -14,9 +14,9 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <io.projectreactor.version>3.4.17</io.projectreactor.version>
+        <io.projectreactor.version>3.4.22</io.projectreactor.version>
         <net.datafaker.version>1.5.0</net.datafaker.version>
-        <junit-jupiter-engine.version>5.8.2</junit-jupiter-engine.version>
+        <junit-jupiter-engine.version>5.9.0</junit-jupiter-engine.version>
 
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
     </properties>
