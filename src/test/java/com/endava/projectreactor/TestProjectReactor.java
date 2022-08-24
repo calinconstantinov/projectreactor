@@ -37,6 +37,15 @@ class TestProjectReactor {
         flux.subscribe(System.out::println);
     }
 
+    @Test
+    void testAllSubscribeMethods() {
+        Flux<Object> flux = Flux.just(1, 2, 3, "a", Faker.instance().name().fullName());
+
+        flux.subscribe(
+            o -> System.out.println("Received: " + o),
+            e -> System.out.println("Error: " + e.getMessage()),
+            () -> System.out.println("Completed!"));
+    }
 
     @Test
     void testFluxDelay() throws InterruptedException {
@@ -132,18 +141,7 @@ class TestProjectReactor {
 
 
     @Test
-    void testAllSubscribeMethods() {
-        Flux<Object> flux = Flux.just(1, 2, 3, "a", Faker.instance().name().fullName());
-
-        flux.subscribe(
-            o -> System.out.println("Received: " + o),
-            e -> System.out.println("Error: " + e.getMessage()),
-            () -> System.out.println("Completed!"));
-    }
-
-
-    @Test
-    void testAllSubscribeMethodsError() {
+    void testError() {
         Flux<Object> flux = Flux.just(1, 2, 3, "a", Faker.instance().name().fullName())
             .map(v -> (Integer) v);
 
