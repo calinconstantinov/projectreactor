@@ -37,6 +37,7 @@ class TestProjectReactor {
         flux.subscribe(System.out::println);
     }
 
+
     @Test
     void testAllSubscribeMethods() {
         Flux<Object> flux = Flux.just(1, 2, 3, "a", Faker.instance().name().fullName());
@@ -46,6 +47,7 @@ class TestProjectReactor {
             e -> System.out.println("Error: " + e.getMessage()),
             () -> System.out.println("Completed!"));
     }
+
 
     @Test
     void testFluxDelay() throws InterruptedException {
@@ -247,14 +249,14 @@ class TestProjectReactor {
 
     @Test
     void testMerge() throws InterruptedException {
-        Flux<String> alternative1 = Flux.interval(Duration.ofSeconds(1))
+        Flux<String> alternate1 = Flux.interval(Duration.ofSeconds(1))
             .map(aLong -> Faker.instance().name().fullName());
 
-        Flux<Integer> alternative2 = Flux.interval(Duration.ofSeconds(4))
+        Flux<Integer> alternate2 = Flux.interval(Duration.ofSeconds(4))
             .map(aLong -> Faker.instance().random().nextInt(10, 30));
 
-        Flux.merge(alternative1, alternative2).subscribe(objects ->
-            System.out.println(objects + "\t\t -- Thread : " + Thread.currentThread().getName()));
+        Flux.merge(alternate1, alternate2).subscribe(data ->
+            System.out.printf("%-20s --- %5s%n", data, Thread.currentThread().getName()));
 
         System.out.println("Thread : " + Thread.currentThread().getName());
         Thread.sleep(100000);
@@ -263,14 +265,14 @@ class TestProjectReactor {
 
     @Test
     void testZipNoBackpressure() throws InterruptedException {
-        Flux<String> alternative1 = Flux.interval(Duration.ofSeconds(1))
+        Flux<String> alternate1 = Flux.interval(Duration.ofSeconds(1))
             .map(aLong -> Faker.instance().name().fullName());
 
-        Flux<Integer> alternative2 = Flux.interval(Duration.ofSeconds(4))
+        Flux<Integer> alternate2 = Flux.interval(Duration.ofSeconds(4))
             .map(aLong -> Faker.instance().random().nextInt(10, 30));
 
-        Flux.zip(alternative1, alternative2).subscribe(objects ->
-            System.out.println(objects + "\t\t -- Thread : " + Thread.currentThread().getName()));
+        Flux.zip(alternate1, alternate2).subscribe(data ->
+            System.out.printf("%-25s --- %5s%n", data, Thread.currentThread().getName()));
 
         System.out.println("Thread : " + Thread.currentThread().getName());
         Thread.sleep(100000);
@@ -279,14 +281,14 @@ class TestProjectReactor {
 
     @Test
     void testZipBackpressure() throws InterruptedException {
-        Flux<String> alternative1 = Flux.interval(Duration.ofSeconds(1))
+        Flux<String> alternate1 = Flux.interval(Duration.ofSeconds(1))
             .map(aLong -> Faker.instance().name().fullName()).onBackpressureBuffer();
 
-        Flux<Integer> alternative2 = Flux.interval(Duration.ofSeconds(4))
+        Flux<Integer> alternate2 = Flux.interval(Duration.ofSeconds(4))
             .map(aLong -> Faker.instance().random().nextInt(10, 30));
 
-        Flux.zip(alternative1, alternative2).subscribe(objects ->
-            System.out.println(objects + "\t\t -- Thread : " + Thread.currentThread().getName()));
+        Flux.zip(alternate1, alternate2).subscribe(data ->
+            System.out.printf("%-25s --- %5s%n", data, Thread.currentThread().getName()));
 
         System.out.println("Thread : " + Thread.currentThread().getName());
         Thread.sleep(100000);
