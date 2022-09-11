@@ -8,7 +8,7 @@ class TestProjectReactorEmpty {
 
     @Test
     void testFluxFromArray() {
-       
+
     }
 
     @Test
