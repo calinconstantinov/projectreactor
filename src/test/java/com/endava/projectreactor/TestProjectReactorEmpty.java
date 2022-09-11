@@ -1,10 +1,15 @@
 package com.endava.projectreactor;
 
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
 
 
 class TestProjectReactorEmpty {
 
+    @Test
+    void testFluxFromArray() {
+       
+    }
 
     @Test
     void testFluxFromStream() {
