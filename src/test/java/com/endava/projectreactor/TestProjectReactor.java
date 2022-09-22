@@ -3,6 +3,7 @@ package com.endava.projectreactor;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
 import java.util.List;
@@ -256,7 +257,7 @@ class TestProjectReactor {
             .map(aLong -> Faker.instance().random().nextInt(10, 30));
 
         Flux.merge(alternate1, alternate2).subscribe(data ->
-            System.out.printf("%-20s --- %5s%n", data, Thread.currentThread().getName()));
+            System.out.printf("%-25s --- %5s%n", data, Thread.currentThread().getName()));
 
         System.out.println("Thread : " + Thread.currentThread().getName());
         Thread.sleep(100000);
@@ -292,6 +293,25 @@ class TestProjectReactor {
 
         System.out.println("Thread : " + Thread.currentThread().getName());
         Thread.sleep(100000);
+    }
+
+
+    @Test
+    void testScheduleOn() throws InterruptedException {
+        Flux.generate(synchronousSink -> {
+                int element = Faker.instance().random().nextInt(1, 20);
+                System.out.printf("%-15s --- %15s%n", "Created: " + element, Thread.currentThread().getName());
+                synchronousSink.next(element);
+                if (element == 5) {
+                    synchronousSink.complete();
+                }
+            })
+            .subscribeOn(Schedulers.boundedElastic())
+            .doFirst(() -> System.out.printf("%-15s --- %15s%n", "Assembly time!", Thread.currentThread().getName()))
+            .subscribe(
+                data -> System.out.printf("%-15s --- %15s%n", "Received: " + data, Thread.currentThread().getName()));
+
+        Thread.sleep(3000);
     }
 
 }
