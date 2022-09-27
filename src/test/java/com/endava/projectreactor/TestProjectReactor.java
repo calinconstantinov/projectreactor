@@ -298,7 +298,7 @@ class TestProjectReactor {
 
     @Test
     void testScheduleOn() throws InterruptedException {
-        Flux.generate(synchronousSink -> {
+        Flux<Integer> flux = Flux.<Integer>generate(synchronousSink -> {
                 int element = Faker.instance().random().nextInt(1, 20);
                 System.out.printf("%-15s --- %15s%n", "Created: " + element, Thread.currentThread().getName());
                 synchronousSink.next(element);
@@ -307,9 +307,10 @@ class TestProjectReactor {
                 }
             })
             .subscribeOn(Schedulers.boundedElastic())
-            .doFirst(() -> System.out.printf("%-15s --- %15s%n", "Assembly time!", Thread.currentThread().getName()))
-            .subscribe(
-                data -> System.out.printf("%-15s --- %15s%n", "Received: " + data, Thread.currentThread().getName()));
+            .doFirst(() -> System.out.printf("%-15s --- %15s%n", "Assembly time!", Thread.currentThread().getName()));
+
+        flux.subscribe(
+            data -> System.out.printf("%-15s --- %15s%n", "Received: " + data, Thread.currentThread().getName()));
 
         Thread.sleep(3000);
     }
