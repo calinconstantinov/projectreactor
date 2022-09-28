@@ -44,7 +44,7 @@ class TestProjectReactor {
     void testAllSubscribeMethods() {
         Flux<Object> flux = Flux.just(1, 2, 3, "a", Faker.instance().name().fullName());
 
-        flux.subscribe(
+        flux.log().subscribe(
             o -> System.out.println("Received: " + o),
             e -> System.out.println("Error: " + e.getMessage()),
             () -> System.out.println("Completed!"));
@@ -164,7 +164,7 @@ class TestProjectReactor {
                 System.out.println("Some error encountered:" + throwable.getMessage());
             });
 
-        flux.log().subscribe(
+        flux.subscribe(
             o -> System.out.println("Received: " + o),
             e -> System.out.println("Error: " + e.getMessage()),
             () -> System.out.println("Completed!"));
