@@ -3,6 +3,7 @@ package com.endava.projectreactor;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
@@ -297,7 +298,7 @@ class TestProjectReactor {
 
 
     @Test
-    void testScheduleOn() throws InterruptedException {
+    void testSubscribeOn() throws InterruptedException {
         Flux.generate(synchronousSink -> {
                 int element = Faker.instance().random().nextInt(1, 20);
                 System.out.printf("%-15s --- %15s%n", "Created: " + element, Thread.currentThread().getName());
@@ -316,9 +317,32 @@ class TestProjectReactor {
 
 
     @Test
-    void testBoundedElastic() throws InterruptedException {
+    void testSubscribeOnSubscribeOn() throws InterruptedException {
         Flux<Integer> flux = Flux.<Integer>create(fluxSink -> {
-                for (int i = 0; i <= 5; i++) {
+                for (int i = 0; i < 3; i++) {
+                    System.out.printf("%-15s --- %15s%n", "Created: " + i, Thread.currentThread().getName());
+                    fluxSink.next(i);
+                }
+                fluxSink.complete();
+            })
+            .doOnNext(
+                data -> System.out.printf("%-15s --- %15s%n", "First next: " + data, Thread.currentThread().getName()))
+            .subscribeOn(Schedulers.parallel())
+            .doOnNext(
+                data -> System.out.printf("%-15s --- %15s%n", "Second next: " + data, Thread.currentThread().getName()))
+            .subscribeOn(Schedulers.boundedElastic());
+
+        flux.subscribe(
+            data -> System.out.printf("%-15s --- %15s%n", "Received: " + data, Thread.currentThread().getName()));
+
+        Thread.sleep(3000);
+    }
+
+
+    @Test
+    void testSubscribeOnBoundedElasticMultipleSubscribers() throws InterruptedException {
+        Flux<Integer> flux = Flux.<Integer>create(fluxSink -> {
+                for (int i = 0; i < 3; i++) {
                     System.out.printf("%-15s --- %15s%n", "Created: " + i, Thread.currentThread().getName());
                     fluxSink.next(i);
                 }
@@ -333,7 +357,88 @@ class TestProjectReactor {
                     subscriberNumber + " Received: " + data, Thread.currentThread().getName()));
         }
 
-        Thread.sleep(9000);
+        Thread.sleep(3000);
+    }
+
+
+    @Test
+    void testPublishOn() throws InterruptedException {
+        Flux<Integer> flux = Flux.create(fluxSink -> {
+            for (int i = 0; i < 3; i++) {
+                System.out.printf("%-15s --- %15s%n", "Created: " + i, Thread.currentThread().getName());
+                fluxSink.next(i);
+            }
+            fluxSink.complete();
+        });
+
+        flux
+            .publishOn(Schedulers.parallel())
+            .subscribe(
+                data -> System.out.printf("%-15s --- %15s%n", "Received: " + data, Thread.currentThread().getName()));
+
+        Thread.sleep(3000);
+    }
+
+
+    @Test
+    void testPublishOnPublishOn() throws InterruptedException {
+        Flux<Integer> flux = Flux.create(fluxSink -> {
+            for (int i = 0; i < 3; i++) {
+                System.out.printf("%-15s --- %15s%n", "Created: " + i, Thread.currentThread().getName());
+                fluxSink.next(i);
+            }
+            fluxSink.complete();
+        });
+
+        flux = flux
+            .publishOn(Schedulers.parallel())
+            .doOnNext(
+                data -> System.out.printf("%-15s --- %15s%n", "Next: " + data,
+                    Thread.currentThread().getName()));
+
+        flux.publishOn(Schedulers.boundedElastic())
+            .subscribe(
+                data -> System.out.printf("%-15s --- %15s%n", "Received: " + data, Thread.currentThread().getName()));
+
+
+        Thread.sleep(3000);
+    }
+
+
+    @Test
+    void testSubscribeOnSubscribeOnPublishOnPublishOnMultipleSubscribers() throws InterruptedException {
+        Flux<Integer> flux = Flux.<Integer>create(fluxSink -> {
+                for (int i = 0; i < 3; i++) {
+                    System.out.printf("%-15s --- %15s%n", "Created: " + i, Thread.currentThread().getName());
+                    fluxSink.next(i);
+                }
+                fluxSink.complete();
+            })
+            .doOnNext(
+                data -> System.out.printf("%-15s --- %15s%n", "Top next: " + data, Thread.currentThread().getName()))
+            .subscribeOn(Schedulers.newParallel("topParallel"))
+            .doOnNext(
+                data -> System.out.printf("%-15s --- %15s%n", "Middle next: " + data, Thread.currentThread().getName()))
+            .subscribeOn(Schedulers.boundedElastic());
+
+        flux = flux
+            .publishOn(Schedulers.parallel())
+            .doOnNext(
+                data -> System.out.printf("%-15s --- %15s%n", "Bottom next: " + data,
+                    Thread.currentThread().getName()));
+
+
+        Scheduler newParallel = Schedulers.newParallel("bottomParallel");
+
+        flux.publishOn(newParallel)
+            .subscribe(
+                data -> System.out.printf("%-15s --- %15s%n", "Received: " + data, Thread.currentThread().getName()));
+
+        flux.publishOn(newParallel)
+            .subscribe(
+                data -> System.out.printf("%-15s --- %15s%n", "Received: " + data, Thread.currentThread().getName()));
+
+        Thread.sleep(3000);
     }
 
 }
