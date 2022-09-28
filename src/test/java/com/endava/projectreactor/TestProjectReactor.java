@@ -183,7 +183,7 @@ class TestProjectReactor {
 
         coldStream.subscribe(s -> System.out.println("Subscriber 2: " + s));
 
-        Thread.sleep(30000);
+        Thread.sleep(20000);
     }
 
 
@@ -201,7 +201,7 @@ class TestProjectReactor {
 
         coldStream.subscribe(s -> System.out.println("Subscriber 2: " + s));
 
-        Thread.sleep(30000);
+        Thread.sleep(20000);
     }
 
 
@@ -223,7 +223,7 @@ class TestProjectReactor {
 
         coldStream.subscribe(s -> System.out.println("Subscriber 3: " + s));
 
-        Thread.sleep(30000);
+        Thread.sleep(20000);
     }
 
 
@@ -245,7 +245,7 @@ class TestProjectReactor {
 
         coldStream.subscribe(s -> System.out.println("Subscriber 3: " + s));
 
-        Thread.sleep(30000);
+        Thread.sleep(20000);
     }
 
 
@@ -261,13 +261,13 @@ class TestProjectReactor {
             System.out.printf("%-25s --- %5s%n", data, Thread.currentThread().getName()));
 
         System.out.println("Thread : " + Thread.currentThread().getName());
-        Thread.sleep(100000);
+        Thread.sleep(20000);
     }
 
 
     @Test
     void testZipNoBackpressure() throws InterruptedException {
-        Flux<String> alternate1 = Flux.interval(Duration.ofSeconds(1))
+        Flux<String> alternate1 = Flux.interval(Duration.ofMillis(400))
             .map(aLong -> Faker.instance().name().fullName());
 
         Flux<Integer> alternate2 = Flux.interval(Duration.ofSeconds(4))
@@ -277,13 +277,13 @@ class TestProjectReactor {
             System.out.printf("%-25s --- %5s%n", data, Thread.currentThread().getName()));
 
         System.out.println("Thread : " + Thread.currentThread().getName());
-        Thread.sleep(100000);
+        Thread.sleep(20000);
     }
 
 
     @Test
     void testZipBackpressure() throws InterruptedException {
-        Flux<String> alternate1 = Flux.interval(Duration.ofSeconds(1))
+        Flux<String> alternate1 = Flux.interval(Duration.ofSeconds(400))
             .map(aLong -> Faker.instance().name().fullName()).onBackpressureBuffer();
 
         Flux<Integer> alternate2 = Flux.interval(Duration.ofSeconds(4))
@@ -293,7 +293,7 @@ class TestProjectReactor {
             System.out.printf("%-25s --- %5s%n", data, Thread.currentThread().getName()));
 
         System.out.println("Thread : " + Thread.currentThread().getName());
-        Thread.sleep(100000);
+        Thread.sleep(20000);
     }
 
 
