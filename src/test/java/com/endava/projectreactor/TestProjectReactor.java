@@ -158,8 +158,32 @@ class TestProjectReactor {
 
 
     @Test
+    void testOnErrorComplete() {
+        Flux.just(1, 2, 3, 4, 5)
+            .map(v -> v / (3 - v) + v)
+            .onErrorComplete()
+            .subscribe(
+                o -> System.out.println("Received: " + o),
+                e -> System.out.println("Error: " + e.getMessage()),
+                () -> System.out.println("Completed!"));
+    }
+
+
+    @Test
+    void testOnErrorReturn() {
+        Flux.just(1, 2, 3, 4, 5)
+            .map(v -> v / (3 - v) + v)
+            .onErrorReturn(0)
+            .subscribe(
+                o -> System.out.println("Received: " + o),
+                e -> System.out.println("Error: " + e.getMessage()),
+                () -> System.out.println("Completed!"));
+    }
+
+
+    @Test
     void testOnErrorContinue() {
-        Flux<Integer> flux = Flux.just(1, 2, 3, "a", Faker.instance().name().fullName())
+        Flux<Integer> flux = Flux.just(1, 2, 3, "a", Faker.instance().name().fullName(), 5, 6, 7)
             .map(v -> (Integer) v)
             .onErrorContinue((throwable, o) -> {
                 System.out.println("Some error encountered:" + throwable.getMessage());
@@ -169,6 +193,23 @@ class TestProjectReactor {
             o -> System.out.println("Received: " + o),
             e -> System.out.println("Error: " + e.getMessage()),
             () -> System.out.println("Completed!"));
+    }
+
+
+    @Test
+    void testRetry() {
+        Flux.range(1, 10)
+            .flatMap(integer -> {
+                int value = Faker.instance().random().nextInt(1, 10);
+                System.out.println("Created: " + value);
+                if (value != 5) {
+                    return Mono.error(new RuntimeException("error!"));
+                }
+                return Mono.just(value);
+            })
+            .next()
+            .retry()
+            .subscribe(i -> System.out.println("Received: " + i));
     }
 
 
@@ -203,23 +244,6 @@ class TestProjectReactor {
                 }
             )
             .switchIfEmpty(Flux.range(3, 6))
-            .subscribe(i -> System.out.println("Received: " + i));
-    }
-
-
-    @Test
-    void testRetry() {
-        Flux.range(1, 10)
-            .flatMap(integer -> {
-                int value = Faker.instance().random().nextInt(1, 10);
-                System.out.println("Created: " + value);
-                if (value != 5) {
-                    return Mono.error(new RuntimeException("error!"));
-                }
-                return Mono.just(value);
-            })
-            .next()
-            .retry()
             .subscribe(i -> System.out.println("Received: " + i));
     }
 
