@@ -180,11 +180,19 @@ class TestProjectReactor {
             .subscribe(i -> System.out.println("Received: " + i));
     }
 
+    @Test
+    void testSwitchIfEmpty() {
+        Flux.just(1, 2, 3)
+            .filter(i -> i == 4)
+            .switchIfEmpty(Flux.range(3, 6))
+            .subscribe(i -> System.out.println("Received: " + i));
+    }
+
 
     @Test
     void testRetry() {
         Flux.range(1, 10)
-            .concatMap(integer -> {
+            .flatMap(integer -> {
                 int value = Faker.instance().random().nextInt(1, 10);
                 System.out.println("Created: " + value);
                 if (value != 5) {
