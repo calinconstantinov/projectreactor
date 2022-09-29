@@ -172,6 +172,15 @@ class TestProjectReactor {
 
 
     @Test
+    void testDefaultIfEmpty() {
+        Flux.just(1, 2, 3)
+            .filter(i -> i == 4)
+            .defaultIfEmpty(100)
+            .subscribe(i -> System.out.println("Received: " + i));
+    }
+
+
+    @Test
     void testColdPublisher() throws InterruptedException {
         Flux<String> coldStream = Flux.fromIterable(
                 List.of("Person 1", "Person 2", "Person 3", "Person 4", "Person 5"))
@@ -502,6 +511,7 @@ class TestProjectReactor {
 
         Thread.sleep(3000);
     }
+
 
     @Test
     void testSequential() throws InterruptedException {
