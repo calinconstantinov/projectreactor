@@ -3,6 +3,7 @@ package com.endava.projectreactor;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
@@ -176,6 +177,23 @@ class TestProjectReactor {
         Flux.just(1, 2, 3)
             .filter(i -> i == 4)
             .defaultIfEmpty(100)
+            .subscribe(i -> System.out.println("Received: " + i));
+    }
+
+
+    @Test
+    void testRetry() {
+        Flux.range(1, 10)
+            .concatMap(integer -> {
+                int value = Faker.instance().random().nextInt(1, 10);
+                System.out.println("Created: " + value);
+                if (value != 5) {
+                    return Mono.error(new RuntimeException("error!"));
+                }
+                return Mono.just(value);
+            })
+            .next()
+            .retry()
             .subscribe(i -> System.out.println("Received: " + i));
     }
 
