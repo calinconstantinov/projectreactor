@@ -180,10 +180,28 @@ class TestProjectReactor {
             .subscribe(i -> System.out.println("Received: " + i));
     }
 
+
     @Test
     void testSwitchIfEmpty() {
         Flux.just(1, 2, 3)
             .filter(i -> i == 4)
+            .switchIfEmpty(Flux.range(3, 6))
+            .subscribe(i -> System.out.println("Received: " + i));
+    }
+
+
+    @Test
+    void testSwitchOnFirst() {
+        Flux.just(1, 2, 3, 4, 5)
+            .map(i -> Faker.instance().random().nextInt(1, 10))
+            .switchOnFirst(
+                (signal, integerFlux) -> {
+                    if (signal.isOnNext() && signal.get() % 2 == 0) {
+                        return integerFlux;
+                    }
+                    return Flux.just(20, 20, 20);
+                }
+            )
             .switchIfEmpty(Flux.range(3, 6))
             .subscribe(i -> System.out.println("Received: " + i));
     }
