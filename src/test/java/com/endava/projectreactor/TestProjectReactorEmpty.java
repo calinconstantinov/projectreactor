@@ -11,6 +11,7 @@ class TestProjectReactorEmpty {
 
     }
 
+
     @Test
     void testFluxFromStream() {
 
@@ -54,7 +55,7 @@ class TestProjectReactorEmpty {
 
 
     @Test
-    void testSortAndDistinct() throws InterruptedException {
+    void testSortAndDistinct() {
 
     }
 
@@ -78,7 +79,43 @@ class TestProjectReactorEmpty {
 
 
     @Test
+    void testOnErrorComplete() {
+
+    }
+
+
+    @Test
+    void testOnErrorReturn() {
+
+    }
+
+
+    @Test
     void testOnErrorContinue() {
+
+    }
+
+
+    @Test
+    void testRetry() {
+
+    }
+
+
+    @Test
+    void testDefaultIfEmpty() {
+
+    }
+
+
+    @Test
+    void testSwitchIfEmpty() {
+
+    }
+
+
+    @Test
+    void testSwitchOnFirst() {
 
     }
 
@@ -121,6 +158,66 @@ class TestProjectReactorEmpty {
 
     @Test
     void testZipBackpressure() throws InterruptedException {
+
+    }
+
+
+    @Test
+    void testSubscribeOn() throws InterruptedException {
+
+    }
+
+
+    @Test
+    void testSubscribeOnSubscribeOn() throws InterruptedException {
+
+    }
+
+
+    @Test
+    void testSubscribeOnBoundedElasticMultipleSubscribers() throws InterruptedException {
+
+    }
+
+
+    @Test
+    void testPublishOn() throws InterruptedException {
+
+    }
+
+
+    @Test
+    void testPublishOnPublishOn() throws InterruptedException {
+
+    }
+
+
+    @Test
+    void testSubscribeOnPublishOn() throws InterruptedException {
+
+    }
+
+
+    @Test
+    void testPublishOnSubscribeOn() throws InterruptedException {
+
+    }
+
+
+    @Test
+    void testSubscribeOnSubscribeOnPublishOnPublishOnMultipleSubscribers() throws InterruptedException {
+
+    }
+
+
+    @Test
+    void testRunOn() throws InterruptedException {
+
+    }
+
+
+    @Test
+    void testSequential() throws InterruptedException {
 
     }
 
